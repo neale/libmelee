@@ -23,3 +23,5 @@ https://github.com/dolphin-emu/dolphin/pull/4407
 The libmelee API should be considered to be in a state of high flux until you stop seeing this message. Expect many changes, including plenty that break compatibility. Just FYI
 
 libmelee is inspired by, but not exactly conforming to, the OpenAI Gym API.
+
+If you run into issues with executing run.py, make sure that you are using python 3. Python 2 will throw generator errors immediately 
