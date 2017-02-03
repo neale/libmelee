@@ -1,7 +1,6 @@
 """Helper functions for with some techskill examples"""
 from melee import enums
 
-
 """Higher order funtions for character actions"""
 
 """Frame-perfect Multishines as Fox"""
@@ -60,57 +59,92 @@ def run_forward(ai_state, controller, tilt=(.5, .5)):
     return
 
 def run_backward(ai_state, controller, tilt=(.5, .5)):
-    controlller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return 
 
-def smash_up(ai_state, controller, tilt=(.5, .5)):
-    controller.tilt_analog(enums.Button.BUTTON_C, .5, 1)
+def smash_up_up(ai_state, controller, tilt=(.5, .1)):
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
+    return
+
+def smash_up_down(ai_state, controller, tilt=(.5, .5)):
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
+    return
+
+def smash_up_left(ai_state, controller, tilt=(.5, .5)):
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    return
+
+def smash_up_right(ai_state, controller, tilt=(.5, .5)):
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
+    return
 
 def smash_down(ai_state, controller, tilt=(.5, .5)):
-    controller.tilt_analog(enums.Button.BUTTON_C, .5, 0)
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
     return
 
 def smash_left(ai_state, controller, tilt=(.5, .5)):
-    controller.tilt_analog(enums.Button.BUTTON_C, 0, .5)
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return
 
 def smash_right(ai_state, controller, tilt=(.5, .5)):
-    controller.tilt_analog(enums.Button.BUTTON_C, 1, .5)
+    controller.press_button(enums.Button.BUTTON_B)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
     return
 
 def attack_up(ai_state, controller, tilt=(.5, .5)):
-    controller.push_button(enums.Button.BUTTON_A)
+    controller.press_button(enums.Button.BUTTON_A)
     controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
     return
 
 def attack_down(ai_state, controller, tilt=(.5, .5)):
-    controller.push_button(enums.Button.BUTTON_A)
+    controller.press_button(enums.Button.BUTTON_A)
     controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
     return
 
 def attack_left(ai_state, controller, tilt=(.5, .5)):
-    controller.push_button(enums.Button.BUTTON_A)
+    controller.press_button(enums.Button.BUTTON_A)
     controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return
 
 def attack_right(ai_state, controller, tilt=(.5, .5)):
-    controller.push_button(enums.Button.BUTTON_A)
+    controller.press_button(enums.Button.BUTTON_A)
     controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
     return
 
 def shield(ai_state, controller, tilt=(.5, .5)):
     controller.press_button(enums.Button.BUTTON_L)
+    return
 
 def roll_right(ai_state, controller, tilt=(.5, .5)):
-    pass
+    controller.press_button(enums.Button.BUTTON_L)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    return
 
 def roll_left(ai_state, controller, tilt=(.5, .5)):
-    pass
+    controller.press_button(enums.Button.BUTTON_L)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
+    return
 
 def grab(ai_state, controller, tilt=(.5, .5)):
-    pass
+    controller.press_button(enums.Button.BUTTON_Z)
+    return
 
-manager = {"actions" : [run_forward, run_backward, smash_up, smash_down, smash_right, smash_left, attack_up, attack_down, attack_left,
-                        attack_right, shield, roll_right, roll_left, grab, jump_forward]
+def get_actions():
+    return manager
+
+manager = {"actions" : [
+                        run_forward, run_backward, smash_up_up, smash_up_down, 
+                        smash_up_right, smash_up_left, smash_down, smash_right, 
+                        smash_left, attack_up, attack_down, attack_left, 
+                        attack_right, shield, roll_right, roll_left, grab, 
+                        jump_forward
+                       ]
           }
+
 

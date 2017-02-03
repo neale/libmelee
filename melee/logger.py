@@ -6,15 +6,15 @@ import os
 class Logger:
     def __init__(self):
         timestamp = datetime.datetime.fromtimestamp(time.time())
-        #Create the Pipes directory if it doesn't already exist
+        #create the pipes directory if it doesn't already exist
         if not os.path.exists("Logs/"):
             os.makedirs("Logs/")
         self.csvfile = open('Logs/' + str(timestamp) + '.csv', 'w')
-        fieldnames = ['Frame', 'Opponent x',
-            'Opponent y', 'AI x', 'AI y', 'Opponent Facing', 'AI Facing',
-            'Opponent Action', 'AI Action', 'Opponent Action Frame', 'AI Action Frame',
-            'Opponent Jumps Left', 'AI Jumps Left', 'Opponent Stock', 'AI Stock',
-            'Opponent Percent', 'AI Percent', 'Buttons Pressed', 'Notes', 'Frame Process Time']
+        fieldnames = ['frame', 'opponent x',
+            'opponent y', 'ai x', 'ai y', 'opponent facing', 'ai facing',
+            'opponent action', 'ai action', 'opponent action frame', 'ai action frame',
+            'opponent jumps left', 'ai jumps left', 'opponent stock', 'ai stock',
+            'opponent percent', 'ai percent', 'buttons pressed', 'notes', 'frame process time']
         self.writer = csv.DictWriter(self.csvfile, fieldnames=fieldnames, extrasaction='ignore')
         self.current_row = dict()
         self.rows = []
@@ -60,3 +60,44 @@ class Logger:
     def writelog(self):
         self.writer.writeheader()
         self.writer.writerows(self.rows)
+
+
+
+class ActionLogger(object):
+    def __init__(self):
+        timestamp = datetime.datetime.fromtimestamp(time.time())
+        #create the pipes directory if it doesn't already exist
+        if not os.path.exists("Logs/"):
+            os.makedirs("Logs/")
+        self.csvfile = open('Logs/' + "actionlog " + str(timestamp) + '.csv', 'w')
+        fieldnames = ['AI_ACTION']
+        self.writer = csv.DictWriter(self.csvfile, fieldnames=fieldnames, extrasaction='ignore')
+        self.current_row = dict()
+        self.rows = []
+        self.filename = self.csvfile.name
+    
+    def actionlogger(self, gamestate, action_string):
+        ai_state = gamestate.ai_state
+        opponent_state = gamestate.opponent_state
+        self.log("AI_ACTION",str(action_string))
+
+    def log(self, column, contents, concat=False):
+        #Should subsequent logs be cumulative?
+        if concat:
+            if column in self.current_row:
+                self.current_row[column] += contents
+            else:
+                self.current_row[column] = contents
+        else:
+            self.current_row[column] = contents
+            print (contents)
+
+    def writelog(self):
+        self.writer.writeheader()
+        self.writer.writerows(self.rows)
+
+    def writeframe(self):
+        self.rows.append(self.current_row)
+        self.current_row = dict()
+
+
