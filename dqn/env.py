@@ -46,6 +46,10 @@ class Env(object):
     def navigate_postgame(self):
 	melee.menuhelper.skippostgame(self.controller)
 
+    def navgate_character_select(self):
+        melee.menuhelper.choosecharacter(melee.enums.Character.FOX,
+	    self.gamestate, self.controller, swag=True, start=False)
+
     """ Requests an action from the Q network object that was passed in, 
     you can see that the network only can move at the pace of the game, e.g. 60 fps
     once we have an action, we do a lookup and return the function. We counter this 
@@ -61,6 +65,7 @@ class Env(object):
         self.last_action = action_func
         return action_func
 
+    def collect_gradients(self):
     def run(self):
         """ Were just going to set up all of our class variables here
         this involves the initialization of dolphin, the controller, 
@@ -100,19 +105,15 @@ class Env(object):
         for _ in range(self.max_games):
 	    #"step" to the next frame
 	    self.gamestate.step()
+            self.collect_gradients()
 	    if self.gamestate.menu_state == melee.enums.Menu.IN_GAME:
-                action = melee.techskill.manager['actions'][np.random.randint(0, r)]
-                print ("{} GAMESTATE: IN_GAME, ACTION: {}".format(get_time(), action.__name__))
+                #action = melee.techskill.manager['actions'][np.random.randint(0, r)]
+                action = self.get_action_network()
                 action(ai_state=gamestate.ai_state, controller=controller)
+
 	    #If we're at the character select screen, choose our character
 	    elif gamestate.menu_state == melee.enums.Menu.CHARACTER_SELECT:
-		if current_state is not "CHARACTER_SELECT":
-		    print("{} GAMESTATE: CHARACTER SELECT".format(get_time()))
-		    current_state = "CHARACTER_SELECT"
-
-		melee.menuhelper.choosecharacter(melee.enums.Character.FOX,
-		    self.gamestate, self.controller, swag=True,
-		    start=False)
+                self.navigate_character_select
 	    #If we're at the postgame scores screen, spam START
 	    elif gamestate.menu_state == melee.enums.Menu.POSTGAME_SCORES:
                 self.navigate_postgame()
