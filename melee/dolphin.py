@@ -1,6 +1,7 @@
 import os, pwd, shutil, subprocess
 import configparser
 from melee import enums
+import sys
 
 """Class for making confuguration and interfacing with the Dolphin emulator easy"""
 class Dolphin:
@@ -133,7 +134,11 @@ class Dolphin:
     """Terminate the dolphin process"""
     def terminate(self):
         if self.process != None:
-            self.process.terminate()
+            try:
+                self.process.terminate()
+            except NameError:
+                print ("This was probably a legal termination")
+                sys.exit(0)
 
     """Return the path to dolphin's home directory"""
     def get_dolphin_home_path(self):

@@ -12,8 +12,8 @@ import numpy as np
 
 class Env(object):
 
-    def __init__(self, DQN, max_episodes, stage="FINAL_DESTINATION",
-                 opponent="HUMAN", port=2, opponent_port=1):
+    def __init__(self, DQN, max_games, stage="FINAL_DESTINATION",
+                 opponent="HUMAN", port=2, opponent_port=1, DEBUG=True):
 
         self.DQN           = DQN
         self.max_games     = max_games
@@ -25,30 +25,33 @@ class Env(object):
         self.gamestate     = None
         self.controller    = None
         self.last_action   = None
+        self.manager       = melee.techskill.manager
+        self.games         = 0
+        self.DEBUG         = DEBUG
 
     def signal_handler(self, signal, frame):
-	self.dolphin.terminate()
-	print("Shutting down cleanly...")
-	sys.exit(0)
+        self.dolphin.terminate()
+        print("Shutting down cleanly...")
+        sys.exit(0)
 
     # Just records from the global time. Is only interesing as a reference
     def get_time(self):
-	return str(datetime.datetime.now())[11:].split(".")[0]
+        return str(datetime.datetime.now())[11:].split(".")[0]
 
     #TODO 
     def get_elapsed_time(self):
         pass
 
     def navigate_menu(self):
-        melee.menuhelper.choosestage(stage=melee.enums.Stage.FINAL_DESTINATION,
-	    self.gamestate, self.controller)
+        melee.menuhelper.choosestage(melee.enums.Stage.FINAL_DESTINATION,
+            self.gamestate, self.controller)
 
     def navigate_postgame(self):
-	melee.menuhelper.skippostgame(self.controller)
+        melee.menuhelper.skippostgame(self.controller)
 
-    def navgate_character_select(self):
+    def navigate_character_select(self):
         melee.menuhelper.choosecharacter(melee.enums.Character.FOX,
-	    self.gamestate, self.controller, swag=True, start=False)
+            self.gamestate, self.controller, swag=True, start=False)
 
     """ Requests an action from the Q network object that was passed in, 
     you can see that the network only can move at the pace of the game, e.g. 60 fps
@@ -57,15 +60,33 @@ class Env(object):
     """
     def get_network_action(self):
 
-        action = int(DQN.action_signal())
-        prob_repeat = np.random.normal(.5, .1, 1)
-        if .1 > prob_repeat or .9 < prob_repeat:
-            action = self.last_action
-        action_func = manager['actions'][action]
+        #action = int(DQN.action_signal())
+        action = int( self.DQN.test_env() ) # gets random signal from test
+        if type(action) is not int:
+            print ("something went wrong with action choice, defaulting to 0")
+            print ("action details: {}".format(action))
+            action = 0; action_func = None
+        action_func = self.manager['actions'][action]
         self.last_action = action_func
         return action_func
 
     def collect_gradients(self):
+        pass
+    #resets the state variables after a game has concluded, or something has gone wrong
+    def reset_vars():
+        self.actions = None
+        self.last_action = None
+        self.log_env(1, "Game Concluded\nElasped Games: {}".format(self.games))
+
+    def log_env(self, log_level, msg):
+        if (self.DEBUG is 1) and (log_level >= 0):
+            if log_level is 2: print ('!! {}'.format(msg))
+            elif log_level is 1: print ('* {}'.format(meg))
+            elif log_level is 0: print ('* {}'.format(msg))
+        
+        else:
+            if log_level is 0: print(msg)
+
     def run(self):
         """ Were just going to set up all of our class variables here
         this involves the initialization of dolphin, the controller, 
@@ -73,24 +94,23 @@ class Env(object):
         of operation from the melee module into a more local scope."""
 
         log = None # For now 
-	if self.opponent is "HUMAN":
+        if self.opponent is "HUMAN":
             opponent_type = melee.enums.ControllerType.STANDARD
-        else if self.opponent is "BOT":
+        elif self.opponent is "BOT":
             opponent_type = melee.enums.COntrollerType.STANDARD
-        else
+        else:
             pass
 
-	print("Starting Training Session")
-	self.dolphin = melee.dolphin.Dolphin(self.port, self.opponent_port, opponent_type, log)
+        print("Starting Training Session")
+        self.dolphin = melee.dolphin.Dolphin(self.port, self.opponent_port, opponent_type, log)
         self.gamestate = melee.gamestate.GameState(self.dolphin)
-	self.controller = melee.controller.Controller(port=self.port, dolphin=self.dolphin)
-	signal.signal(signal.SIGINT, self.signal_handler)
-	self.dolphin.run(render=True)
-	self.controller.connect()
-	print("STARTING: {}".format(self.get_time()))
-	#Main loop
-	current_state = "START"
-	r = len(melee.techskill.manager['actions'])
+        self.controller = melee.controller.Controller(port=self.port, dolphin=self.dolphin)
+        signal.signal(signal.SIGINT, self.signal_handler)
+        self.dolphin.run(render=True)
+        self.controller.connect()
+        self.log_env(0, "STARTING: {}".format(self.get_time()))
+        #Main loop
+        current_state = "START"
         
         """ Here the training program is going to repeat over an amount of games, signals are 
         going to be passed between the loop here and the neural network that we defined in 
@@ -101,27 +121,30 @@ class Env(object):
         1: start next frame 
         2: pass vars and do a forward pass to get action 
         3: receive and perform action / backwards pass """
-
-        for _ in range(self.max_games):
-	    #"step" to the next frame
-	    self.gamestate.step()
+        while self.games is not self.max_games:
+            #"step" to the next frame
+            self.gamestate.step()
             self.collect_gradients()
-	    if self.gamestate.menu_state == melee.enums.Menu.IN_GAME:
+            if self.gamestate.menu_state == melee.enums.Menu.IN_GAME:
                 #action = melee.techskill.manager['actions'][np.random.randint(0, r)]
-                action = self.get_action_network()
-                action(ai_state=gamestate.ai_state, controller=controller)
-
-	    #If we're at the character select screen, choose our character
-	    elif gamestate.menu_state == melee.enums.Menu.CHARACTER_SELECT:
-                self.navigate_character_select
-	    #If we're at the postgame scores screen, spam START
-	    elif gamestate.menu_state == melee.enums.Menu.POSTGAME_SCORES:
+                action = self.get_network_action()
+                action(ai_state=self.gamestate.ai_state, controller=self.controller)
+                finish_flag = False
+            #If we're at the character select screen, choose our character
+            elif self.gamestate.menu_state == melee.enums.Menu.CHARACTER_SELECT:
+                self.navigate_character_select()
+            #If we're at the postgame scores screen, spam START
+            elif self.gamestate.menu_state == melee.enums.Menu.POSTGAME_SCORES:
+                if finish_flag is False:
+                    self.games += 1
+                    self.reset_vars()
+                    finish_flag = True
                 self.navigate_postgame()
-	    #If we're at the stage select screen, choose a stage
-	    elif gamestate.menu_state == melee.enums.Menu.STAGE_SELECT:
-		self.navigate_menu()
-	    #Flush any button presses queued up
-	    self.controller.flush()
+            #If we're at the stage select screen, choose a stage
+            elif self.gamestate.menu_state == melee.enums.Menu.STAGE_SELECT:
+                self.navigate_menu()
+            #Flush any button presses queued up
+            self.controller.flush()
 
     if __name__ == "__main__":
-	main()
+        main()

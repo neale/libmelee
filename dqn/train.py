@@ -1,16 +1,20 @@
+#!/usr/bin/python3
 import ops
 import model
+import env
 import sys
 sys.path.append("..")
 import melee
 import tensorflow as tf
 
-init = get_init_tf()
-tf.reset_default_graph()
-y = .99  
-e = .1                                                                                                                      
-num_episodes = 200
-jList = []
-rList = []
-with tf.session() as sess:
-sess.run(init)  
+
+def train():
+    nn = model.DQN(100, .1, .01, "RMSPROP", './cp')
+    
+    environ = env.Env(nn, nn.epochs)
+    environ.run()
+    
+
+
+if __name__ == '__main__':
+    train()

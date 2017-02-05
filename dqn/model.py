@@ -1,3 +1,4 @@
+import sys; sys.path.append("..")
 import melee
 import numpy as np
 import tensorflow as tf
@@ -29,19 +30,29 @@ def one_hot_dec(data, store, key=None):
 ## ActionsNN -> AugmentingNN with pixels -> output?
 ## for now we do this: [action1..actionN, opp damage, self damage, current action, 
 ##                      isJumping]
+class DQN(object):
+    
+    def __init__(self, epochs, lr, l2_reg, optim, weight_path):
+        self.epochs        = epochs
+        self.learning_rate = lr
+        self.weight_decay  = l2_reg
+        self.optim         = optim
+        self.weight_path   = weight_path
 
-def get_init_tf():
-    inputs = tf.placeholder(shape[1, 17], dtype=tf.int)
-    W      = tf.Variable(tf.random_uniform([17, 5], 0, 0, .1))
-    Qout   = tf.matmul(inputs, W)
-    pred   = tf.argmax(Qout, 1)
+        tf.reset_default_graph()
+        self.get_init_tf()
 
-    return tf.initialize_all_variables()
+    def get_init_tf(self):
+        inputs = tf.placeholder(shape=[1, 17], dtype=tf.float32)
+        W      = tf.Variable(tf.random_uniform([17, 5], 0, 0, tf.float32))
+        Qout   = tf.matmul(inputs, W)
+        pred   = tf.argmax(Qout, 1)
+        self.init = tf.global_variables_initializer()
 
-y = .99
-e = .1
-num_episodes = 200;
-jList = []
-rList = []
-with tf.session() as sess:
-    sess.run(init)
+    def train(self):
+        with tf.session() as sess:
+            sess.run(init)
+
+
+    def test_env(self):
+        return np.random.randint(1, 10)
