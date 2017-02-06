@@ -32,9 +32,6 @@ def collect_args():
     parser.add_argument('--debug', '-d', action='store_true',
                         help='Debug mode. Creates a CSV of all game state', 
                         default=True)
-    parser.add_argument('--train', '-t', action='store_false',
-                        help='train the deep neural network',
-                        default=False)
     args = parser.parse_args()
     return args
 
@@ -108,10 +105,12 @@ def main():
             if current_state is not "STAGE_SELECT":
                 print ("{} GAMESTATE: STATE_SELECT".format(get_time()))
                 current_state = "STAGE_SELECT"
-            if args.train:    
                 melee.menuhelper.choosestage(stage=melee.enums.Stage.FINAL_DESTINATION,
                     gamestate=gamestate, controller=controller)
             else: pass
+        
+        else:
+            controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, .5)
         #Flush any button presses queued up
         controller.flush()
 

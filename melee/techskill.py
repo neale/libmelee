@@ -1,4 +1,5 @@
 """Helper functions for with some techskill examples"""
+
 from melee import enums
 
 """Higher order funtions for character actions"""
@@ -62,7 +63,7 @@ def run_backward(ai_state, controller, tilt=(.5, .5)):
     controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return 
 
-def smash_up_up(ai_state, controller, tilt=(.5, .1)):
+def smash_up_up(ai_state, controller, tilt=(.5, .5)):
     controller.press_button(enums.Button.BUTTON_B)
     controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
     return
@@ -135,6 +136,11 @@ def grab(ai_state, controller, tilt=(.5, .5)):
     controller.press_button(enums.Button.BUTTON_Z)
     return
 
+def test(ai_state, controller, tilt=(.5, .5)):
+    controller.press_button(enums.Button.BUTTON_A)
+    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
+    return
+
 def get_actions():
     return manager
 
@@ -143,7 +149,7 @@ manager = {"actions" : [
                         smash_up_right, smash_up_left, smash_down, smash_right, 
                         smash_left, attack_up, attack_down, attack_left, 
                         attack_right, shield, roll_right, roll_left, grab, 
-                        jump_forward
+                        jump_forward, test
                        ]
           }
 

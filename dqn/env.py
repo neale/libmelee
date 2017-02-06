@@ -13,7 +13,7 @@ import numpy as np
 class Env(object):
 
     def __init__(self, DQN, max_games, stage="FINAL_DESTINATION",
-                 opponent="HUMAN", port=2, opponent_port=1, DEBUG=True):
+                 opponent="HUMAN", port=2, opponent_port=1, DEBUG=1):
 
         self.DQN           = DQN
         self.max_games     = max_games
@@ -25,7 +25,7 @@ class Env(object):
         self.gamestate     = None
         self.controller    = None
         self.last_action   = None
-        self.manager       = melee.techskill.manager
+        self.manager       = melee.techskill.get_actions()
         self.games         = 0
         self.DEBUG         = DEBUG
 
@@ -43,15 +43,15 @@ class Env(object):
         pass
 
     def navigate_menu(self):
-        melee.menuhelper.choosestage(melee.enums.Stage.FINAL_DESTINATION,
-            self.gamestate, self.controller)
-
+        #melee.menuhelper.choosestage(melee.enums.Stage.DREAMLAND,
+        #    self.gamestate, self.controller)
+        pass
     def navigate_postgame(self):
         melee.menuhelper.skippostgame(self.controller)
 
     def navigate_character_select(self):
         melee.menuhelper.choosecharacter(melee.enums.Character.FOX,
-            self.gamestate, self.controller, swag=True, start=False)
+            self.gamestate, self.controller, swag=False, start=False)
 
     """ Requests an action from the Q network object that was passed in, 
     you can see that the network only can move at the pace of the game, e.g. 60 fps
@@ -73,15 +73,16 @@ class Env(object):
     def collect_gradients(self):
         pass
     #resets the state variables after a game has concluded, or something has gone wrong
-    def reset_vars():
+    def reset_vars(self):
         self.actions = None
         self.last_action = None
+        self.games += 1
         self.log_env(1, "Game Concluded\nElasped Games: {}".format(self.games))
 
     def log_env(self, log_level, msg):
         if (self.DEBUG is 1) and (log_level >= 0):
             if log_level is 2: print ('!! {}'.format(msg))
-            elif log_level is 1: print ('* {}'.format(meg))
+            elif log_level is 1: print ('* {}'.format(msg))
             elif log_level is 0: print ('* {}'.format(msg))
         
         else:
@@ -97,7 +98,7 @@ class Env(object):
         if self.opponent is "HUMAN":
             opponent_type = melee.enums.ControllerType.STANDARD
         elif self.opponent is "BOT":
-            opponent_type = melee.enums.COntrollerType.STANDARD
+            opponent_type = melee.enums.ControllerType.STANDARD
         else:
             pass
 
@@ -121,29 +122,41 @@ class Env(object):
         1: start next frame 
         2: pass vars and do a forward pass to get action 
         3: receive and perform action / backwards pass """
+        finish_flag = False
+        frame_skip = 1
+        r = 12
         while self.games is not self.max_games:
             #"step" to the next frame
             self.gamestate.step()
             self.collect_gradients()
             if self.gamestate.menu_state == melee.enums.Menu.IN_GAME:
-                #action = melee.techskill.manager['actions'][np.random.randint(0, r)]
-                action = self.get_network_action()
-                action(ai_state=self.gamestate.ai_state, controller=self.controller)
-                finish_flag = False
+                if frame_skip == 2:
+                    action = self.manager['actions'][np.random.randint(0, 13)]
+                    #action = self.get_network_action()
+                    print (action)
+                    #action(ai_state=self.gamestate.ai_state, controller=self.controller)
+                    frame_skip = 1
+                    print (self.gamestate.ai_state.action)
+                    self.controller.simple_press(.5, 1, melee.enums.Button.BUTTON_B)
+                else: 
+                    frame_skip += 1
+                    self.controller.simple_press(.5, .5, melee.enums.Button.BUTTON_MAIN)
             #If we're at the character select screen, choose our character
             elif self.gamestate.menu_state == melee.enums.Menu.CHARACTER_SELECT:
                 self.navigate_character_select()
+                finish_flag = False
             #If we're at the postgame scores screen, spam START
             elif self.gamestate.menu_state == melee.enums.Menu.POSTGAME_SCORES:
-                if finish_flag is False:
-                    self.games += 1
-                    self.reset_vars()
+                if finish_flag == False:
                     finish_flag = True
+                    self.reset_vars()
                 self.navigate_postgame()
             #If we're at the stage select screen, choose a stage
+            
             elif self.gamestate.menu_state == melee.enums.Menu.STAGE_SELECT:
                 self.navigate_menu()
             #Flush any button presses queued up
+            
             self.controller.flush()
 
     if __name__ == "__main__":
