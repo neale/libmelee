@@ -56,89 +56,111 @@ def jump_forward(ai_state, controller, tilt=(.5, .5)):
 #def jump_backward(ai_state, controller):
 def run_forward(ai_state, controller, tilt=(.5, .5)):
     #pretty much run forward no matter what, may refine later
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
+    controller.simple_press(1, .5, enums.BUTTON_MAIN)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
     return
 
 def run_backward(ai_state, controller, tilt=(.5, .5)):
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    controller.simple_press(0, .5, enums.Button.BUTTON_MAIN)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return 
 
 def smash_up_up(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
+    controller.simple_press(.5, 1, enums.Button.BUTTON_B)
+    controller.simple_press(.5, 1, enums.Button.BUTTON_MAIN)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
     return
 
 def smash_up_down(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
+    controller.simple_press(.5, 1, enums.Button.BUTTON_B)
+    controller.simple_press(.5, 0, enums.Button.BUTTON_MAIN)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
     return
 
 def smash_up_left(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    controller.simple_press(.5, 1, enums.Button.BUTTON_B)
+    controller.simple_press(0, .5, enums.Button.BUTTON_MAIN)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return
 
 def smash_up_right(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
+    controller.simple_press(.5, 1, enums.Button.BUTTON_B)
+    controller.simple_press(1, .5, enums.Button.BUTTON_MAIN)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
     return
 
 def smash_down(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
+    controller.simple_press(.5, 0, enums.Button.BUTTON_B)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
     return
 
 def smash_left(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    controller.simple_press(0, .5, enums.Button.BUTTON_B)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return
 
 def smash_right(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_B)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
+    controller.simple_press(1, .5, enums.Button.BUTTON_B)
+    #controller.press_button(enums.Button.BUTTON_B)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
     return
 
 def attack_up(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_A)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
+    controller.simple_press(.5, 1, enums.Button.BUTTON_A)
+    #controller.press_button(enums.Button.BUTTON_A)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 1)
     return
 
 def attack_down(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_A)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
+    controller.simple_press(.5, 0, enums.Button.BUTTON_A)
+    #controller.press_button(enums.Button.BUTTON_A)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
     return
 
 def attack_left(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_A)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    controller.simple_press(0, .5, enums.Button.BUTTON_A)
+    #controller.press_button(enums.Button.BUTTON_A)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return
 
 def attack_right(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_A)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
+    controller.simple_press(1, .5, enums.Button.BUTTON_A)
+    #controller.press_button(enums.Button.BUTTON_A)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
     return
 
 def shield(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_L)
+    controller.simple_press(.5, .5, enums.Button.BUTTON_L)
+    #controller.press_button(enums.Button.BUTTON_L)
     return
 
 def roll_right(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_L)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
+    controller.simple_press(0, .5, enums.Button.BUTTON_L)
+    #controller.press_button(enums.Button.BUTTON_L)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 0, .5)
     return
 
 def roll_left(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_L)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
+    controller.simple_press(1, .5, enums.Button.BUTTON_L)
+    #controller.press_button(enums.Button.BUTTON_L)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, 1, .5)
     return
 
 def grab(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_Z)
+    controller.simple_press(.5, .5, enums.Button.BUTTON_Z)
+    #controller.press_button(enums.Button.BUTTON_Z)
     return
 
 def test(ai_state, controller, tilt=(.5, .5)):
-    controller.press_button(enums.Button.BUTTON_A)
-    controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
+    controller.simple_press(.5, 0, enums.Button.BUTTON_A)
+    #controller.press_button(enums.Button.BUTTON_A)
+    #controller.tilt_analog(enums.Button.BUTTON_MAIN, .5, 0)
     return
 
 def get_actions():

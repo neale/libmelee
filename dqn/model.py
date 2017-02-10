@@ -38,6 +38,7 @@ class DQN(object):
         self.weight_decay  = l2_reg
         self.optim         = optim
         self.weight_path   = weight_path
+        self.actionfuncs   = melee.techskill.manager
 
         tf.reset_default_graph()
         self.get_init_tf()
@@ -55,4 +56,4 @@ class DQN(object):
 
 
     def test_env(self):
-        return np.random.randint(1, 10)
+        return np.random.randint(1, len(self.actionfuncs['actions']))

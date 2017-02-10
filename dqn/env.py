@@ -131,15 +131,15 @@ class Env(object):
             self.collect_gradients()
             if self.gamestate.menu_state == melee.enums.Menu.IN_GAME:
                 if frame_skip == 2:
-                    action = self.manager['actions'][np.random.randint(0, 13)]
-                    #action = self.get_network_action()
-                    print (action)
-                    #action(ai_state=self.gamestate.ai_state, controller=self.controller)
+                    #action = self.manager['actions'][np.random.randint(0, 13)]
+                    action = self.get_network_action()
+                    print (action.__name__)
+                    action(ai_state=self.gamestate.ai_state, controller=self.controller)
                     frame_skip = 1
-                    print (self.gamestate.ai_state.action)
-                    self.controller.simple_press(.5, 1, melee.enums.Button.BUTTON_B)
+                    #self.controller.simple_press(.5, 1, melee.enums.Button.BUTTON_B)
                 else: 
                     frame_skip += 1
+                    # return to normal, shouldn't have to do this
                     self.controller.simple_press(.5, .5, melee.enums.Button.BUTTON_MAIN)
             #If we're at the character select screen, choose our character
             elif self.gamestate.menu_state == melee.enums.Menu.CHARACTER_SELECT:
